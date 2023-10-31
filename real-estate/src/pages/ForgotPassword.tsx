@@ -1,12 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import {toast} from "react-toastify"
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { app } from "../firebase";
 
 export default function forgotPassword() {
   const [email, setEmail] = useState("");
 
   function onChange(event) {
     setEmail(event.target.value);
+  }
+
+  async function sendPassword(event){
+    event.preventDefault();
+    try {
+      const auth = getAuth(app);
+      await sendPasswordResetEmail(auth,email)
+      toast.success("Password sent to your mail")
+      
+    } catch (error) {
+      toast.error("Cound not send the password");
+    }
+
   }
 
   return (
@@ -21,7 +37,7 @@ export default function forgotPassword() {
           />
         </div>
         <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-          <form>
+          <form onSubmit={sendPassword}>
             <input
               className=" mb-6 w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-200 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring focus:ring-opacity-50 
               transition-opacity duration-200 ease-in-out opacity-90 hover:opacity-100"
@@ -53,7 +69,7 @@ export default function forgotPassword() {
               type="submit"
               className="my-4 w-full bg-blue-500 opacity-90 hover:bg-blue-600 hover:opacity-100 text-white font-semibold uppercase py-3 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none active:bg-blue-700"
             >
-              Sign in
+              Send reset password
             </button>
             <div
               className="flex items-center before:border-t  before:flex-1  before:border-gray-300 
