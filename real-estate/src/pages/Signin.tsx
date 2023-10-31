@@ -1,9 +1,13 @@
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { toast } from "react-toastify";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from "../firebase";
 
 export default function Signin() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -19,7 +23,21 @@ export default function Signin() {
     }));
   }
 
-  function onSubmit(event){
+  async function onSubmit(event) {
+    event.preventDefault();
+    try {
+      const auth = getAuth(app);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (userCredential.user) {
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Bad user Credentials");
+    }
   }
 
   return (
