@@ -17,7 +17,9 @@ export default function Signin() {
       ...prevState,
       [event.target.id]: event.target.value,
     }));
-    console.log(event.target.value);
+  }
+
+  function onSubmit(event){
   }
 
   return (
@@ -32,7 +34,7 @@ export default function Signin() {
           />
         </div>
         <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-          <form>
+          <form onSubmit={onSubmit}>
             <input
               className=" mb-6 w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-200 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring focus:ring-opacity-50 
               transition-opacity duration-200 ease-in-out opacity-90 hover:opacity-100"

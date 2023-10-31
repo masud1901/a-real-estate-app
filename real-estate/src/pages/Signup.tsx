@@ -2,23 +2,57 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { app, db } from "../firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name:"",
+    name: "",
     email: "",
     password: "",
   });
 
-  const {name, email, password } = formData;
+  const { name, email, password } = formData;
+  const navigate = useNavigate();
 
   function onChange(event) {
     setFormData((prevState) => ({
       ...prevState,
       [event.target.id]: event.target.value,
     }));
-    console.log(event.target.value);
+  }
+
+  async function onSubmit(event) {
+    event.preventDefault();
+    try {
+      const auth = getAuth(app);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      });
+      const { user } = userCredential;
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+      await setDoc(doc(db, "users", user.uid), formDataCopy);
+      navigate("/");
+      toast.success("Yay! You have successfully signed up.")
+    } catch (error) {
+      toast.error("Something went wrong with the registration process.");
+    }
   }
 
   return (
@@ -33,8 +67,8 @@ export default function Signup() {
           />
         </div>
         <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-          <form>
-          <input
+          <form onSubmit={onSubmit}>
+            <input
               className=" mb-6 w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-200 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring focus:ring-opacity-50 
               transition-opacity duration-200 ease-in-out opacity-90 hover:opacity-100"
               type="text"
