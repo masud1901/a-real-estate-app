@@ -6,16 +6,16 @@ import { app } from "../firebase";
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [pageState, setPageState] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const auth = getAuth(app);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setPageState(true);
+        setIsLoggedIn(true);
       } else {
-        setPageState(false);
+        setIsLoggedIn(false);
       }
     });
   }, [auth]);
@@ -28,16 +28,16 @@ export default function Header() {
     { text: "Home", path: "/", activePath: pathMatchRoute("/") },
     { text: "Offers", path: "/offers", activePath: pathMatchRoute("/offers") },
     {
-      text: pageState ? "Profile" : "Sign in",
-      path: pageState ? "/profile" : "/sign-in",
-      activePath: pageState
+      text: isLoggedIn ? "Profile" : "Sign in",
+      path: isLoggedIn ? "/profile" : "/sign-in",
+      activePath: isLoggedIn
         ? pathMatchRoute("/profile")
         : pathMatchRoute("/sign-in"),
     },
   ];
 
   return (
-    <div className="bg-white border-b shadow-sm sticky top-0 z-50">
+    <div className="bg-white border-b shadow-sm sticky top-0 z-40">
       <header className="flex justify-between items-center px-12 max-w-6xl mx-auto">
         <div>
           <img
