@@ -8,6 +8,7 @@ import { app } from "../firebase";
 
 export default function Signin() {
   const navigate = useNavigate();
+  // const [loggedIn,setLoggedIn] =useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -34,6 +35,9 @@ export default function Signin() {
       );
       if (userCredential.user) {
         navigate("/");
+        () => {
+          setLoggedIn((prevState) => !prevState);
+        };
       }
     } catch (error) {
       toast.error("Bad user Credentials");

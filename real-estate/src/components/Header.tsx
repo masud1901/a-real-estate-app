@@ -1,8 +1,24 @@
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "../firebase";
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [pageState, setPageState] = useState(false);
+
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setPageState(true);
+      } else {
+        setPageState(false);
+      }
+    });
+  }, [auth]);
 
   function pathMatchRoute(route) {
     return route === location.pathname;
@@ -12,9 +28,11 @@ export default function Header() {
     { text: "Home", path: "/", activePath: pathMatchRoute("/") },
     { text: "Offers", path: "/offers", activePath: pathMatchRoute("/offers") },
     {
-      text: "Sign in",
-      path: "/sign-in",
-      activePath: pathMatchRoute("/sign-in"),
+      text: pageState ? "Profile" : "Sign in",
+      path: pageState ? "/profile" : "/sign-in",
+      activePath: pageState
+        ? pathMatchRoute("/profile")
+        : pathMatchRoute("/sign-in"),
     },
   ];
 
