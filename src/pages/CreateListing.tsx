@@ -264,7 +264,12 @@ export default function CreateListing() {
             className="w-full px-3 py-1.5 text-gray-700 bg-white border-gray-300 rounded-lg transition duration-150 ease-in-out focus:bg-white focus:border-slate-600"
           />
         </div>
-        <button type="submit" className="my-4 w-full bg-blue-500 opacity-90 hover:bg-blue-600 hover:opacity-100 text-white font-semibold uppercase py-3 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none active:bg-blue-700">Create Listing</button>
+        <button
+          type="submit"
+          className="my-4 w-full bg-blue-500 opacity-90 hover:bg-blue-600 hover:opacity-100 text-white font-semibold uppercase py-3 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none active:bg-blue-700"
+        >
+          Create Listing
+        </button>
       </form>
     </main>
   );
