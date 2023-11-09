@@ -4,6 +4,8 @@ import { app, db } from "../firebase";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { doc, updateDoc } from "firebase/firestore";
+import { FcHome } from "react-icons/fc";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const auth = getAuth(app);
@@ -36,22 +38,22 @@ export default function Profile() {
         toast.error("Name is required");
         return;
       }
-  
+
       // Destructure 'auth.currentUser' and 'name'
       const { displayName, uid } = auth.currentUser;
-  
+
       if (displayName !== name) {
         // Update display name in Firebase Authentication
         await updateProfile(auth.currentUser, {
           displayName: name,
         });
-  
+
         // Update user data in Firestore database
         const userDocRef = doc(db, "users", uid);
         await updateDoc(userDocRef, {
           name,
         });
-  
+
         toast.success("Profile details updated");
       } else {
         toast.success("No changes to update");
@@ -60,7 +62,7 @@ export default function Profile() {
       toast.error("Could not update the profile details");
     }
   }
-  
+
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
@@ -87,7 +89,7 @@ export default function Profile() {
               id="email"
               value={email}
               disabled={!changeDetail}
-              onChange = {onChange}
+              onChange={onChange}
               className={`w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out mb-6 ${
                 changeDetail &&
                 "bg-white-100 focus:bg-blue-700 focus:text-gray-100"
@@ -115,6 +117,20 @@ export default function Profile() {
               </p>
             </div>
           </form>
+
+          <button
+            type="submit"
+            className="my-4 w-full bg-red-500 hover:bg-red-600 text-white font-semibold uppercase py-3 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none active:bg-red-700"
+          >
+            <Link to="/create-listing">
+              <p className="flex items-center justify-center">
+                <span className="mr-2 text-2xl">
+                  <FcHome/>
+                </span>
+                Sell or Rent your home
+              </p>
+            </Link>
+          </button>
         </div>
       </section>
     </>
