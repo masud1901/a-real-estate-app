@@ -1,15 +1,26 @@
 import { getAuth, updateCurrentUser, updateProfile } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { app, db } from "../firebase";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { FcHome } from "react-icons/fc";
 import { Link } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 
 export default function Profile() {
   const auth = getAuth(app);
   const [changeDetail, setChangeDetail] = useState(false);
+  const [listings, setListings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: auth.currentUser?.displayName,
@@ -62,6 +73,29 @@ export default function Profile() {
       toast.error("Could not update the profile details");
     }
   }
+
+  useEffect(() => {
+    async function fetchUserListings() {
+      const listingRef = collection(db, "listings");
+      const q = query(
+        listingRef,
+        where("userRef", "==", auth.currentUser?.uid),
+        orderBy("timestamp", "desc")
+      );
+
+      const querySnap = await getDocs(q);
+      let listings = [];
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setListings(listings);
+      setLoading(false);
+    }
+    fetchUserListings();
+  }, [auth.currentUser.uid]);
 
   return (
     <>
@@ -125,7 +159,7 @@ export default function Profile() {
             <Link to="/create-listing">
               <p className="flex items-center justify-center">
                 <span className="mr-2 text-2xl">
-                  <FcHome/>
+                  <FcHome />
                 </span>
                 Sell or Rent your home
               </p>
@@ -133,6 +167,24 @@ export default function Profile() {
           </button>
         </div>
       </section>
+      <div className=" max-w-6xl px-4 mt-6 mx-auto">
+        {!loading && listings.length > 0 && (
+          <>
+            <h2 className="text-4xl text-center mt-6 font-light">
+              My Listings
+            </h2>
+            <ul>
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </>
   );
 }
